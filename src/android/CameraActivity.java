@@ -445,9 +445,9 @@ public class CameraActivity extends Fragment {
   };
 
   
-    PreviewCallback jpegPictureCallback = new PreviewCallback(){
+    PreviewCallback previewPictureCallback = new PreviewCallback(){
     public void onPreviewFrame(byte[] data, Camera arg1){
-      Log.d(TAG, "CameraPreview onPreviewFrame");
+      Log.d(TAG, "CameraPreview previewPictureCallback");
 
       try {
         // Matrix matrix = new Matrix();
@@ -575,7 +575,7 @@ public class CameraActivity extends Fragment {
 
       new Thread() {
         public void run() {
-					   mCamera.setOneShotPreviewCallback(jpegPictureCallback);
+			mCamera.setOneShotPreviewCallback(previewPictureCallback);
 
           // Camera.Parameters params = mCamera.getParameters();
 
