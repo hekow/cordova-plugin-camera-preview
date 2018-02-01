@@ -575,7 +575,8 @@ public class CameraActivity extends Fragment {
 
       new Thread() {
         public void run() {
-			
+					   mCamera.setOneShotPreviewCallback(jpegPictureCallback);
+
           // Camera.Parameters params = mCamera.getParameters();
 
           // Camera.Size size = getOptimalPictureSize(width, height, params.getPreviewSize(), params.getSupportedPictureSizes());
