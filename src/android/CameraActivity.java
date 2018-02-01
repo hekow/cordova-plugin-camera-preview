@@ -466,7 +466,7 @@ public class CameraActivity extends Fragment {
         // // Check if matrix has changed. In that case, apply matrix and override data
         // if (!matrix.isIdentity()) {
           Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
-		  int pixel = bitmap.getPixel(bitmap.getWidth()/2,bitmap.getHeight()/2)
+		  int pixel = bitmap.getPixel(bitmap.getWidth()/2,bitmap.getHeight()/2);
           // bitmap = applyMatrix(bitmap, matrix);
 
           // ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
