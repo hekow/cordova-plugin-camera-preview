@@ -479,6 +479,8 @@ public class CameraActivity extends Fragment {
         eventListener.onPictureTaken(pixel+"");
         Log.d(TAG, "CameraPreview pictureTakenHandler called back");
 		Log.d(TAG, pixel+"");
+		Log.d(TAG,"PIXEL"+ pixel+"");
+
 
       } catch (OutOfMemoryError e) {
         // most likely failed to allocate memory for rotateBitmap
