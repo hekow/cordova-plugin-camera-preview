@@ -437,6 +437,7 @@ public class CameraActivity extends Fragment {
     
       } catch (Exception e) {
         Log.d(TAG, "CameraPreview onPictureTaken general exception");
+		Log.d(TAG, e);
       } finally {
         canTakePicture = true;
         mCamera.startPreview();
@@ -489,6 +490,8 @@ public class CameraActivity extends Fragment {
         eventListener.onPictureTakenError("Picture too large (memory)");
       } catch (Exception e) {
         Log.d(TAG, "CameraPreview onPictureTaken general exception");
+		        Log.d(TAG, e.toString());
+
       } finally {
         canTakePicture = true;
         mCamera.startPreview();
