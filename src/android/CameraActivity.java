@@ -444,6 +444,57 @@ public class CameraActivity extends Fragment {
     }
   };
 
+  
+    PreviewCallback jpegPictureCallback = new PreviewCallback(){
+    public void onPreviewFrame(byte[] data, Camera arg1){
+      Log.d(TAG, "CameraPreview onPreviewFrame");
+
+      try {
+        // Matrix matrix = new Matrix();
+        // if (cameraCurrentlyLocked == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+          // matrix.preScale(1.0f, -1.0f);
+        // }
+
+        // ExifInterface exifInterface = new ExifInterface(new ByteArrayInputStream(data));
+        // int rotation = exifInterface.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL);
+        // int rotationInDegrees = exifToDegrees(rotation);
+
+        // if (rotation != 0f) {
+          // matrix.preRotate(rotationInDegrees);
+        // }
+
+        // // Check if matrix has changed. In that case, apply matrix and override data
+        // if (!matrix.isIdentity()) {
+          Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
+		  int pixel = bitmap.getPixel(bitmap.getWidth()/2,bitmap.getHeight()/2)
+          // bitmap = applyMatrix(bitmap, matrix);
+
+          // ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+          // bitmap.compress(Bitmap.CompressFormat.JPEG, currentQuality, outputStream);
+          // data = outputStream.toByteArray();
+        // }
+
+        //String encodedColor = Base64.encodeToString(data, Base64.NO_WRAP);
+
+        eventListener.onPictureTaken(pixel+"");
+        Log.d(TAG, "CameraPreview pictureTakenHandler called back");
+      } catch (OutOfMemoryError e) {
+        // most likely failed to allocate memory for rotateBitmap
+        Log.d(TAG, "CameraPreview OutOfMemoryError");
+        // failed to allocate memory
+        eventListener.onPictureTakenError("Picture too large (memory)");
+      } catch (IOException e) {
+        Log.d(TAG, "CameraPreview IOException");
+        eventListener.onPictureTakenError("IO Error when extracting exif");
+      } catch (Exception e) {
+        Log.d(TAG, "CameraPreview onPictureTaken general exception");
+      } finally {
+        canTakePicture = true;
+        mCamera.startPreview();
+      }
+    }
+  };
+
   private Camera.Size getOptimalPictureSize(final int width, final int height, final Camera.Size previewSize, final List<Camera.Size> supportedSizes){
     /*
       get the supportedPictureSize that:
@@ -524,23 +575,24 @@ public class CameraActivity extends Fragment {
 
       new Thread() {
         public void run() {
-          Camera.Parameters params = mCamera.getParameters();
+			
+          // Camera.Parameters params = mCamera.getParameters();
 
-          Camera.Size size = getOptimalPictureSize(width, height, params.getPreviewSize(), params.getSupportedPictureSizes());
-          params.setPictureSize(size.width, size.height);
-          currentQuality = quality;
+          // Camera.Size size = getOptimalPictureSize(width, height, params.getPreviewSize(), params.getSupportedPictureSizes());
+          // params.setPictureSize(size.width, size.height);
+          // currentQuality = quality;
 
-          if(cameraCurrentlyLocked == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            // The image will be recompressed in the callback
-            params.setJpegQuality(99);
-          } else {
-            params.setJpegQuality(quality);
-          }
+          // if(cameraCurrentlyLocked == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            // // The image will be recompressed in the callback
+            // params.setJpegQuality(99);
+          // } else {
+            // params.setJpegQuality(quality);
+          // }
 
-          params.setRotation(mPreview.getDisplayOrientation());
+          // params.setRotation(mPreview.getDisplayOrientation());
 
-          mCamera.setParameters(params);
-          mCamera.takePicture(null, null, jpegPictureCallback);
+          // mCamera.setParameters(params);
+          // mCamera.takePicture(null, null, jpegPictureCallback);
         }
       }.start();
     } else {
