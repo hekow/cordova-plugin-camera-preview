@@ -478,8 +478,8 @@ public class CameraActivity extends Fragment {
 
         eventListener.onPictureTaken(pixel+"");
         Log.d(TAG, "CameraPreview pictureTakenHandler called back");
+		Log.d(TAG,"PIXEL");
 		Log.d(TAG, pixel+"");
-		Log.d(TAG,"PIXEL"+ pixel+"");
 
 
       } catch (OutOfMemoryError e) {
