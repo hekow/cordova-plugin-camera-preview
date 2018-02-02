@@ -502,8 +502,8 @@ public class CameraActivity extends Fragment {
         // if (!matrix.isIdentity()) {
 			        Log.d(TAG, "CameraPreview Decoding"+data.length);
 		int[] pixels; 
-decodeYUV420SP(pixels)
-		  int pixel = bitmap.getPixel(bitmap.getWidth()/2,bitmap.getHeight()/2);
+		decodeYUV420SP(pixels,data,width,height);
+		  int pixel = pixels[pixels.length/2;
           // bitmap = applyMatrix(bitmap, matrix);
 
           // ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
