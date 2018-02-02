@@ -476,7 +476,7 @@ public class CameraActivity extends Fragment {
                 rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);  
               }  
             }  
-          }  
+            
     } 
 	
 
