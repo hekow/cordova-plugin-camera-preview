@@ -579,30 +579,31 @@ public class CameraActivity extends Fragment {
       }
 
       canTakePicture = false;
+	  mCamera.setOneShotPreviewCallback(previewPictureCallback);
+    Log.d(TAG, "CameraPreview takePicture oneshoot");
 
-      new Thread() {
-        public void run() {
-			mCamera.setOneShotPreviewCallback(previewPictureCallback);
+      // new Thread() {
+        // public void run() {
 
-          // Camera.Parameters params = mCamera.getParameters();
+          // // Camera.Parameters params = mCamera.getParameters();
 
-          // Camera.Size size = getOptimalPictureSize(width, height, params.getPreviewSize(), params.getSupportedPictureSizes());
-          // params.setPictureSize(size.width, size.height);
-          // currentQuality = quality;
+          // // Camera.Size size = getOptimalPictureSize(width, height, params.getPreviewSize(), params.getSupportedPictureSizes());
+          // // params.setPictureSize(size.width, size.height);
+          // // currentQuality = quality;
 
-          // if(cameraCurrentlyLocked == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            // // The image will be recompressed in the callback
-            // params.setJpegQuality(99);
-          // } else {
-            // params.setJpegQuality(quality);
-          // }
+          // // if(cameraCurrentlyLocked == Camera.CameraInfo.CAMERA_FACING_FRONT) {
+            // // // The image will be recompressed in the callback
+            // // params.setJpegQuality(99);
+          // // } else {
+            // // params.setJpegQuality(quality);
+          // // }
 
-          // params.setRotation(mPreview.getDisplayOrientation());
+          // // params.setRotation(mPreview.getDisplayOrientation());
 
-          // mCamera.setParameters(params);
-          // mCamera.takePicture(null, null, jpegPictureCallback);
-        }
-      }.start();
+          // // mCamera.setParameters(params);
+          // // mCamera.takePicture(null, null, jpegPictureCallback);
+        // }
+      // }.start();
     } else {
       canTakePicture = true;
     }
