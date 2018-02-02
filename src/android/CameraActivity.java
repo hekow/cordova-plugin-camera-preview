@@ -447,7 +447,7 @@ public class CameraActivity extends Fragment {
     }
   };
 
-  static public void decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height) {  
+   public static void decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height) {  
               
             final int frameSize = width * height;  
   
