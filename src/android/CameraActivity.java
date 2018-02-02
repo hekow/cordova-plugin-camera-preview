@@ -437,7 +437,7 @@ public class CameraActivity extends Fragment {
     
       } catch (Exception e) {
         Log.d(TAG, "CameraPreview onPictureTaken general exception");
-		Log.d(TAG, e);
+		Log.d(TAG, e.toString());
       } finally {
         canTakePicture = true;
         mCamera.startPreview();
