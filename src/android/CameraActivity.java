@@ -466,6 +466,8 @@ public class CameraActivity extends Fragment {
 
         // // Check if matrix has changed. In that case, apply matrix and override data
         // if (!matrix.isIdentity()) {
+			        Log.d(TAG, "CameraPreview Decoding"+data.length);
+
           Bitmap bitmap = BitmapFactory.decodeByteArray(data, 0, data.length);
 		  int pixel = bitmap.getPixel(bitmap.getWidth()/2,bitmap.getHeight()/2);
           // bitmap = applyMatrix(bitmap, matrix);
@@ -490,7 +492,8 @@ public class CameraActivity extends Fragment {
         eventListener.onPictureTakenError("Picture too large (memory)");
       } catch (Exception e) {
         Log.d(TAG, "CameraPreview onPictureTaken general exception");
-		        Log.d(TAG, e.toString());
+		Log.d(TAG, e.toString());
+        Log.d(TAG, "CameraPreview onPictureTaken general exception END");
 
       } finally {
         canTakePicture = true;
