@@ -32,7 +32,7 @@ import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.hardware.Camera.PreviewCallback;  
+import android.hardware.Camera.PreviewCallback;
 
 import android.widget.RelativeLayout;
 import android.support.media.ExifInterface;
@@ -109,6 +109,7 @@ public class CameraActivity extends Fragment {
     this.y = y;
     this.width = width;
     this.height = height;
+	  //this.pixels = new int[width * height];
   }
 
   private void createCameraPreview(){
@@ -117,7 +118,7 @@ public class CameraActivity extends Fragment {
 
       //set box position and size
       FrameLayout.LayoutParams layoutParams = new FrameLayout.LayoutParams(width, height);
-	  pixels = new int[previewSize.width * previewSize.height];  
+
       layoutParams.setMargins(x, y, 0, 0);
       frameContainerLayout = (FrameLayout) view.findViewById(getResources().getIdentifier("frame_container", "id", appResourcesPackage));
       frameContainerLayout.setLayoutParams(layoutParams);
@@ -130,6 +131,8 @@ public class CameraActivity extends Fragment {
       mainLayout.setEnabled(false);
 
       final GestureDetector gestureDetector = new GestureDetector(getActivity().getApplicationContext(), new TapGestureDetector());
+
+
 
       getActivity().runOnUiThread(new Runnable() {
         @Override
@@ -261,6 +264,14 @@ public class CameraActivity extends Fragment {
     super.onResume();
 
     mCamera = Camera.open(defaultCameraId);
+    if(cameraParameters==null){
+      cameraParameters = mCamera.getParameters();
+    }
+    cameraParameters.setExposureCompensation(0);
+
+    cameraParameters.setAutoExposureLock(true);
+    cameraParameters.setAutoWhiteBalanceLock(true);
+    LOG.d(TAG," cameraParameters");
 
     if (cameraParameters != null) {
       mCamera.setParameters(cameraParameters);
@@ -376,6 +387,7 @@ public class CameraActivity extends Fragment {
     if (mCamera != null && cameraParameters != null) {
       mCamera.setParameters(cameraParameters);
     }
+
   }
 
   public boolean hasFrontCamera(){
@@ -436,7 +448,7 @@ public class CameraActivity extends Fragment {
         Log.d(TAG, "CameraPreview OutOfMemoryError");
         // failed to allocate memory
         eventListener.onPictureTakenError("Picture too large (memory)");
-    
+
       } catch (Exception e) {
         Log.d(TAG, "CameraPreview onPictureTaken general exception");
 		Log.d(TAG, e.toString());
@@ -447,38 +459,111 @@ public class CameraActivity extends Fragment {
     }
   };
 
-   public static void decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height) {  
-              
-            final int frameSize = width * height;  
-  
-            for (int j = 0, yp = 0; j < height; j++) {       int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;  
-              for (int i = 0; i < width; i++, yp++) {  
-                int y = (0xff & ((int) yuv420sp[yp])) - 16;  
-                if (y < 0)  
-                  y = 0;  
-                if ((i & 1) == 0) {  
-                  v = (0xff & yuv420sp[uvp++]) - 128;  
-                  u = (0xff & yuv420sp[uvp++]) - 128;  
-                }  
-  
-                int y1192 = 1192 * y;  
-                int r = (y1192 + 1634 * v);  
-                int g = (y1192 - 833 * v - 400 * u);  
-                int b = (y1192 + 2066 * u);  
-  
-                if (r < 0)                  r = 0;               else if (r > 262143)  
-                   r = 262143;  
-                if (g < 0)                  g = 0;               else if (g > 262143)  
-                   g = 262143;  
-                if (b < 0)                  b = 0;               else if (b > 262143)  
-                   b = 262143;  
-  
-                rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);  
-              }  
-            }  
-            
-    } 
-	
+   // public static void decodeYUV420SP(int[] rgb, byte[] yuv420sp, int width, int height) {
+
+            // final int frameSize = width * height;
+
+            // for (int j = 0, yp = 0; j < height; j++) {       int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
+              // for (int i = 0; i < width; i++, yp++) {
+                // int y = (0xff & ((int) yuv420sp[yp])) - 16;
+                // if (y < 0)
+                  // y = 0;
+                // if ((i & 1) == 0) {
+                  // v = (0xff & yuv420sp[uvp++]) - 128;
+                  // u = (0xff & yuv420sp[uvp++]) - 128;
+                // }
+
+                // int y1192 = 1192 * y;
+                // int r = (y1192 + 1634 * v);
+                // int g = (y1192 - 833 * v - 400 * u);
+                // int b = (y1192 + 2066 * u);
+
+                // if (r < 0)                  r = 0;               else if (r > 262143)
+                   // r = 262143;
+                // if (g < 0)                  g = 0;               else if (g > 262143)
+                   // g = 262143;
+                // if (b < 0)                  b = 0;               else if (b > 262143)
+                   // b = 262143;
+
+                // rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
+              // }
+            // }
+
+    // }
+
+static public void decodeYUV420SP(int[] rgba, byte[] yuv420sp, int width, int height) {
+    final int frameSize = width * height;
+      Log.d(TAG, "CameraPreview Decodong yuv");
+
+    for (int j = 0, yp = 0; j < height; j++) {
+        int uvp = frameSize + (j >> 1) * width, u = 0, v = 0;
+        for (int i = 0; i < width; i++, yp++) {
+            int y = (0xff & ((int) yuv420sp[yp])) - 16;
+            if (y < 0)
+                y = 0;
+            if ((i & 1) == 0) {
+                v = (0xff & yuv420sp[uvp++]) - 128;
+                u = (0xff & yuv420sp[uvp++]) - 128;
+            }
+
+            int y1192 = 1192 * y;
+            int r = (y1192 + 1634 * v);
+            int g = (y1192 - 833 * v - 400 * u);
+            int b = (y1192 + 2066 * u);
+
+            if (r < 0)
+                r = 0;
+            else if (r > 262143)
+                r = 262143;
+            if (g < 0)
+                g = 0;
+            else if (g > 262143)
+                g = 262143;
+            if (b < 0)
+                b = 0;
+            else if (b > 262143)
+                b = 262143;
+
+            // rgb[yp] = 0xff000000 | ((r << 6) & 0xff0000) | ((g >> 2) &
+            // 0xff00) | ((b >> 10) & 0xff);
+            // rgba, divide 2^10 ( >> 10)
+            rgba[yp] = ((r << 14) & 0xff000000) | ((g << 6) & 0xff0000)
+                    | ((b >> 2) | 0xff00);
+        }
+    }
+    }
+
+    private int GetRGBFromYUV(byte[] yuv420sp,int row,int column,int width,int height){
+      final int frameSize = width * height;
+
+      int uvp = frameSize + (row >> 1) * width, u = 0, v = 0;
+      int yp = row*width + column;
+      int y = (0xff & ((int) yuv420sp[yp])) - 16;
+      if (y < 0) y = 0;
+      if ((column & 1) == 0) {
+        v = (0xff & yuv420sp[uvp++]) - 128;
+        u = (0xff & yuv420sp[uvp++]) - 128;
+      }
+
+      int y1192 = 1192 * y;
+      int r = (y1192 + 1634 * v);
+      int g = (y1192 - 833 * v - 400 * u);
+      int b = (y1192 + 2066 * u);
+
+      if (r < 0) r = 0; else if (r > 262143) r = 262143;
+      if (g < 0) g = 0; else if (g > 262143) g = 262143;
+      if (b < 0) b = 0; else if (b > 262143) b = 262143;
+/*      LOG.d(TAG, "CColor r" +r+ " g" +g+ " b"+b);
+
+      r = r * 255 / 262143;
+      g = g * 255 / 262143;
+      b = b * 255 / 262143;
+
+      LOG.d(TAG, "CColor r" +r+ " g" +g+ " b"+b);*/
+      int result = ((r << 6) & 0xff0000) | ((g >> 2) & 0xff00) | ((b >> 10) & 0xff);
+      //LOG.d(TAG, "result" +result);
+      return result;
+    }
 
     PreviewCallback previewPictureCallback = new PreviewCallback(){
     public void onPreviewFrame(byte[] data, Camera arg1){
@@ -500,10 +585,28 @@ public class CameraActivity extends Fragment {
 
         // // Check if matrix has changed. In that case, apply matrix and override data
         // if (!matrix.isIdentity()) {
-			        Log.d(TAG, "CameraPreview Decoding"+data.length);
-		int[] pixels; 
-		decodeYUV420SP(pixels,data,width,height);
-		  int pixel = pixels[pixels.length/2];
+		Camera.Parameters parameters = arg1.getParameters();
+		int width2 = parameters.getPreviewSize().width;
+		int height2 = parameters.getPreviewSize().height;
+
+		Log.d(TAG, "CameraPreview Decoding"+data.length);
+		Log.d(TAG, "CameraPreview"+width*height);
+
+		Log.d(TAG, "CameraPreview"+width+" "+height);
+		Log.d(TAG, "CameraPreview"+width2+" "+height2);
+		Log.d(TAG, "CameraPreview"+width2*height2);
+		Log.d(TAG, "CameraPreview"+parameters.getPreviewFormat());
+		Log.d(TAG, "CameraPreview"+ImageFormat.FLEX_RGB_888);
+
+/*
+
+		if(pixels == null)
+				pixels = new int[width2 * height2];
+*/
+  int pixel = GetRGBFromYUV(data,height2/2,width2/2,width2,height2);
+
+		/*decodeYUV420SP(pixels,data,width2,height2);
+		  int pixel = pixels[pixels.length/2];*/
           // bitmap = applyMatrix(bitmap, matrix);
 
           // ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -613,7 +716,19 @@ public class CameraActivity extends Fragment {
       }
 
       canTakePicture = false;
-	  mCamera.setOneShotPreviewCallback(previewPictureCallback);
+
+      // pppp.setPreviewFormat(ImageFormat.FLEX_RGB_888);
+
+      // mCamera.setParameters(pppp);
+
+      Camera.Parameters pp2 = mCamera.getParameters();
+      boolean xp = pp2.getAutoExposureLock();
+      boolean xp2 = pp2.getAutoWhiteBalanceLock();
+      int xp3 = pp2.getExposureCompensation();
+      boolean xp4 = pp2.isAutoExposureLockSupported();
+      boolean xp5 = pp2.isAutoWhiteBalanceLockSupported();
+      Log.d(TAG, "x^p" +xp+" " + xp2 +" " +xp3+" " +xp4+" " +xp5);
+      mCamera.setOneShotPreviewCallback(previewPictureCallback);
     Log.d(TAG, "CameraPreview takePicture oneshoot");
 
       // new Thread() {
@@ -653,6 +768,7 @@ public class CameraActivity extends Fragment {
       Rect focusRect = calculateTapArea(pointX, pointY, 1f);
       parameters.setFocusMode(Camera.Parameters.FOCUS_MODE_AUTO);
       parameters.setFocusAreas(Arrays.asList(new Camera.Area(focusRect, 1000)));
+	    //parameters.setPreviewFormat(ImageFormat.FLEX_RGB_888);
 
       if (parameters.getMaxNumMeteringAreas() > 0) {
         Rect meteringRect = calculateTapArea(pointX, pointY, 1.5f);
@@ -660,6 +776,7 @@ public class CameraActivity extends Fragment {
       }
 
       try {
+
         setCameraParameters(parameters);
         mCamera.autoFocus(callback);
       } catch (Exception e) {
