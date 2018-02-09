@@ -267,10 +267,10 @@ public class CameraActivity extends Fragment {
     if(cameraParameters==null){
       cameraParameters = mCamera.getParameters();
     }
-    cameraParameters.setExposureCompensation(0);
+    //cameraParameters.setExposureCompensation(0);
 
-    cameraParameters.setAutoExposureLock(true);
-    cameraParameters.setAutoWhiteBalanceLock(true);
+    //cameraParameters.setAutoExposureLock(true);
+    //cameraParameters.setAutoWhiteBalanceLock(true);
     LOG.d(TAG," cameraParameters");
 
     if (cameraParameters != null) {
